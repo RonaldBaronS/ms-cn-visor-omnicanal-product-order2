@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-cn-visor-omnicanal-product-order
+  namespace: visor
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ms-cn-visor-omnicanal-product-order
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: ms-cn-visor-omnicanal-product-order
+    spec:
+      containers:
+        - name: ms-cn-visor-omnicanal-product-order
+          image: acrgenesis.azurecr.io/ms-cn-visor-omnicanal-product-order:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9064
+          env:
+            - name: ENV
+              value: ambiente
+            - name: SPRING_APPLICATION_JSON
+              value: '{"spring":{"cloud":{"config":{"uri":"http://ms-visor-omnicanal-config-server-svc.visor.svc.cluster.local:4051","profile":"dev"}}}}'
+      imagePullSecrets:
+        - name: acr-registry
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ms-cn-visor-omnicanal-product-order-svc
+  namespace: visor
+  labels:
+    app: "ms-cn-visor-omnicanal-product-order"
+spec:
+  ports:
+    - port: 4048
+      targetPort: 9064
+      protocol: TCP
+      name: http
+  selector:
+    app: ms-cn-visor-omnicanal-product-order
+
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: ms-cn-visor-omnicanal-product-order-ingress-nginx
+  namespace: visor
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "request-id, request-date, content-type"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "PUT, GET, POST, DELETE, PATCH, OPTIONS"
+    cert-manager.io/cluster-issuer: letsencrypt-staging
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      more_set_headers "Ingress: $ingress_name";
+spec:
+  tls:
+    - hosts:
+        - aks-visor-ingress-dev.eastus2.cloudapp.azure.com
+      secretName: ms-cn-visor-omnicanal-product-order-ingress-secret
+  rules:
+    - host: aks-visor-ingress-dev.eastus2.cloudapp.azure.com
+      http:
+        paths:
+          - backend:
+              serviceName: ms-cn-visor-omnicanal-product-order-svc
+              servicePort: 4048
+            path: /productorder/v1

@@ -1,0 +1,25 @@
+server:
+  port: 9071
+
+spring:
+  main:
+    allow-bean-definition-overriding: true
+microservices:
+   errores:
+     url: https://aks-visor-ingress-cert.eastus2.cloudapp.azure.com/
+     id: 1234567890
+   token:
+    url: https://aks-visor-ingress-cert.eastus2.cloudapp.azure.com/token
+    name: ms-token
+    id: 4567890123
+    metodos:
+      actualizar:
+        name: actualizarToken
+      buscar:
+        name: buscarToken
+   retrieveProductOrderRi:
+     url: http://demo6713149.mockable.io/retrieveProductOrders/v1/productOrders
+     name: ms-retrieve-product-order-ri
+     metodos:
+      listar:
+        url: /ri/product-order-mock/v2/productorder

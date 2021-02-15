@@ -1,0 +1,13 @@
+[
+    {
+        "id": "5db333c0ed31aa1cb6590f9e",
+        "areaId": "VISOR",
+        "descripcion": "descripcion",
+        "fechaRegistro": "2020-09-10T12:00:00.000+0000"
+    }, {
+        "id": "5db333c0ed31aa1cb6590f9f",
+        "areaId": "VISORTDP",
+        "descripcion": "descripcion",
+        "fechaRegistro": "2019-09-10T17:00:00.000+0000"
+    }
+]
